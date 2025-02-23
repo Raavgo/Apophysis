@@ -1,0 +1,48 @@
+# This is a basic workflow to help you get started with Actions
+
+name: RunStegoTest
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow onpull request events but only for the "main" branch when it was closed
+  pull_request:
+    branches: [ "Stage" ]
+    types: 
+      - closed 
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  connect_to_cluster:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Install OpenVPN and expect
+        run: sudo apt-get update && sudo apt-get install -y openvpn expect  
+      - name: Set up OpenVPN configuration
+        run: echo "${{ secrets.OVPN }}" > vpn-config.ovpn
+      - name: Connect to VPN
+        run: |
+          # Extract username and password from the secret
+          IFS=';' read -r VPN_USER VPN_PASS <<< "${{ secrets.CREDS }}"
+      
+          echo "$VPN_PASS" > vpn-pass.txt
+          chmod 600 vpn-pass.txt  # Secure the password file
+      
+          # Using expect to handle username/password prompt
+          expect -c "
+          spawn sudo openvpn --config vpn-config.ovpn --auth-user-pass
+          expect \"Username:\"
+          send \"$VPN_USER\r\"
+          expect \"Password:\"
+          send \"$VPN_PASS\r\"
+          interact
+          " &
+      
+          sleep 15  # Give OpenVPN time to establish the connection
+          
+      - name: Check VPN Connection
+        run: ip a | grep tun || echo "VPN connection failed"
+        
+        
