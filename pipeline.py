@@ -1,4 +1,5 @@
 import os
+from embeddings.metadata import metadata
 
-
-print("Hellpcon")
+embedding_metadata = metadata("Name")
+embedding_metadata("bla")

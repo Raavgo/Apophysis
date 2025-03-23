@@ -1,4 +1,12 @@
 # CODE: Embedding image into PNG metadata
+from typing import override
+
+from .embedding_base import Embedding_base
+
+class metadata(Embedding_base):
+    @override
+    def function(self, x):
+        pass
 
 from PIL import Image
 import base64

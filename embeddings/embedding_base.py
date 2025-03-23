@@ -1,8 +1,6 @@
 import numpy as np
 import brotli
 from PIL import Image
-
-
 class Embedding_base:
     def __init__(self, limit=-1):
         self.ctr = 0
