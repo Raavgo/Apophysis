@@ -49,6 +49,8 @@ def load_input_file_errorhandling(input_file):
         print(f"Error while loading file: {e}")
         return None
 
+# TODO: check size fo malware before embedding
+
 # convert textfile to base64
 def input_file_to_base64(input_file):
     with open(input_file, "rb") as f:

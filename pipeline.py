@@ -1,5 +1,5 @@
 import os
-from embeddings.metadata import metadata
+from embeddings.mp import metadata
 
 embedding_metadata = metadata("Name")
 embedding_metadata("bla")
