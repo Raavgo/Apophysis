@@ -1,9 +1,9 @@
 # CODE: Embedding image into PNG metadata
 from typing import override
 
-from .embedding_base import Embedding_base
+from .embeddingbase import EmbeddingBase
 
-class metadata(Embedding_base):
+class metadata(EmbeddingBase):
     @override
     def function(self, x):
         pass
