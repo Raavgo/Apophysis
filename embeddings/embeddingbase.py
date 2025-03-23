@@ -34,7 +34,8 @@ class EmbeddingBase:
         pass
 
     def reverse(self, image:Image) -> Image:
-        pass
+        data = self.reverse_function(image)
+        return self.__decompress(data)
 
     def __can_embed(self, compressed:bytes) -> bool:
         if self.limit == -1:
@@ -48,12 +49,30 @@ class EmbeddingBase:
         self.ctr += 1
 
         if mode == 'brotli':
-            return brotli.compress(executable)
+            return b'R' + brotli.compress(executable)
         elif mode == 'lzma':
-            return lzma.compress(executable)
+            return b'L' + lzma.compress(executable)
         elif mode == 'bz2':
-            return bz2.compress(executable)
+            return b'B' + bz2.compress(executable)
         elif mode == 'zlib':
-            return zlib.compress(executable)
+            return b'Z' + zlib.compress(executable)
         else:
             raise ValueError(f"Unsupported compression mode: {mode}")
+
+    def __decompress(self, data: bytes) -> bytes:
+        if not data:
+            raise ValueError("Empty input data")
+
+        method = data[0:1]
+        compressed = data[1:]
+
+        if method == b'Z':
+            return zlib.decompress(compressed)
+        elif method == b'B':
+            return bz2.decompress(compressed)
+        elif method == b'L':
+            return lzma.decompress(compressed)
+        elif method == b'R':
+            return brotli.decompress(compressed)
+        else:
+            raise ValueError(f"Unknown compression method byte: {method}")

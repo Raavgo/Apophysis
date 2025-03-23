@@ -14,3 +14,7 @@ class MP(EmbeddingBase):
         metadata.add_text("Description", encoded_executable)
         
         return image, metadata
+
+    @override
+    def reverse_function(self,image:Image) -> bytes:
+        return image.info['Description']
