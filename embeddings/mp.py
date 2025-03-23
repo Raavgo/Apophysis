@@ -1,24 +1,16 @@
 import base64
 
 from embeddings.embeddingbase import EmbeddingBase
-from PIL import Image
+from PIL import Image, PngImagePlugin
 from typing import override
-import piexif
+
 
 class MP(EmbeddingBase):
     @override
-    def function(self, image:Image, executable:bytes) -> Image:
-        
+    def function(self, image:Image, executable:bytes) -> (Image, bytes):
         encoded_executable = base64.b64encode(executable).decode('utf-8')
-    
-        #metadata dictionary
-        metadata = {
-            'Title': 'Embedded File',
-            'Author': 'Valentina',
-            'Description': encoded_executable
-        }
+        metadata = PngImagePlugin.PngInfo()
+        metadata.add_text("Title", "Embedded File")
+        metadata.add_text("Description", encoded_executable)
         
-        stegoimage = image.copy()
-        stegoimage.info.update(metadata)
-        
-        return stegoimage
+        return image, metadata

@@ -5,7 +5,7 @@ import bz2
 import lzma
 from PIL import Image
 from brotli import decompress
-from multipledispatch import dispatch
+#from multipledispatch import dispatch
 
 class EmbeddingBase:
     def __init__(self, limit=-1):
@@ -13,7 +13,7 @@ class EmbeddingBase:
         self.limit = limit
         self.mode = ['brotli', 'lzma', 'bz2', 'zlib']
 
-    @dispatch(Image, bytes)
+    #@dispatch(Image, bytes)
     def __call__(self, img, executable) -> Image:
         compress = self.__compress(executable)
 
@@ -21,13 +21,16 @@ class EmbeddingBase:
             raise Exception('File cannot be embedded')
         return self.function(img, compress)
 
-    @dispatch(Image)
-    def __call__(self, img) -> bytes:
-        mode = ""
-        decompress = self.reverse(img)
+    #@dispatch(Image)
+    #def __call__(self, img) -> bytes:
+    #    mode = ""
+    #    decompress = self.reverse(img)
 
 
     def function(self, image:Image, executable:bytes) -> Image:
+        pass
+
+    def reverse_function(self,image:Image) -> bytes:
         pass
 
     def reverse(self, image:Image) -> Image:
@@ -41,6 +44,7 @@ class EmbeddingBase:
 
     def __compress(self, executable) -> bytes:
         mode = self.mode[self.ctr % len(self.mode)]
+        print(mode)
         self.ctr += 1
 
         if mode == 'brotli':

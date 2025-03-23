@@ -4,7 +4,7 @@ import requests
 from PIL import Image
 from io import BytesIO
 
-def get_next_image(dims:Tuple[int, int], executable) -> Image:
+def get_next_image(dims:Tuple[int, int]) -> Image:
     req = requests.get(f"https://picsum.photos/{dims[0]}/{dims[1]}")
     return Image.open(BytesIO(req.content))
 
