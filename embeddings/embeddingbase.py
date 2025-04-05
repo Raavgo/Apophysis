@@ -8,29 +8,25 @@ from brotli import decompress
 #from multipledispatch import dispatch
 
 class EmbeddingBase:
-    def __init__(self, limit=-1):
+    def __init__(self):
         self.ctr = 0
-        self.limit = limit
+        self.limit = -1
         self.mode = ['brotli', 'lzma', 'bz2', 'zlib']
 
-    #@dispatch(Image, bytes)
-    def __call__(self, img, executable) -> Image:
+    def __call__(self, img:Image, executable:bytes) -> Image:
         compress = self.__compress(executable)
-
+        self.__set_limit_function(img.size)
         if not self.__can_embed(compress):
             raise Exception('File cannot be embedded')
         return self.function(img, compress)
-
-    #@dispatch(Image)
-    #def __call__(self, img) -> bytes:
-    #    mode = ""
-    #    decompress = self.reverse(img)
-
 
     def function(self, image:Image, executable:bytes) -> Image:
         pass
 
     def reverse_function(self,image:Image) -> bytes:
+        pass
+
+    def __set_limit_function(self, dims) -> None:
         pass
 
     def reverse(self, image:Image) -> Image:
