@@ -3,7 +3,7 @@ import base64
 from embeddings.embeddingbase import EmbeddingBase
 from PIL import Image, PngImagePlugin
 from typing import override
-
+#Won t work
 
 class MP(EmbeddingBase):
     @override
