@@ -1,0 +1,33 @@
+import hashlib
+import os
+import sys
+import importlib
+from pathlib import Path
+from PIL import Image
+path = str(Path(__file__).resolve().parent.parent)
+sys.path.append(path)
+embedding_classes = {}
+
+from embeddings.lsb import LSB
+from embeddings.pvd import PVD
+embedding = PVD()
+from hashlib import md5
+from utils.getter import get_next_image
+
+img = get_next_image((512, 512))
+test_executables_path = os.path.join(path, "test_executables")
+executables = []
+for _, _, files in os.walk(test_executables_path):
+    for file in files:
+        if file.endswith(".exe"):
+            executables.append(file)
+
+for executable in executables:
+    with open(os.path.join(test_executables_path, executable), "rb") as f:
+        exe = f.read()
+    original_hash = hashlib.md5(exe).hexdigest()
+    embedded_img = embedding(img, exe)
+    reverse = embedding.reverse(embedded_img)
+    restored_hash = hashlib.md5(reverse).hexdigest()
+
+    print(original_hash, restored_hash)
