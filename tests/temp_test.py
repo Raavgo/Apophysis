@@ -9,8 +9,8 @@ sys.path.append(path)
 embedding_classes = {}
 
 from embeddings.lsb import LSB
-from embeddings.pvd import PVD
-embedding = PVD()
+from embeddings.afp import AFP
+embedding = AFP()
 from hashlib import md5
 from utils.getter import get_next_image
 
@@ -30,4 +30,4 @@ for executable in executables:
     reverse = embedding.reverse(embedded_img)
     restored_hash = hashlib.md5(reverse).hexdigest()
 
-    print(original_hash, restored_hash)
+    print(original_hash, restored_hash, original_hash==restored_hash)
