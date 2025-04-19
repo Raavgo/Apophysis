@@ -1,7 +1,100 @@
 from PIL import Image
-
+from math import floor, log2
 from embeddings.embeddingbase import EmbeddingBase
 
 class PVD(EmbeddingBase):
-    def function(self, image:Image, executable:bytes) -> Image:
-        pass
+    PVD_RANGES = [(0, 7), (8, 15), (16, 31), (32, 63), (64, 127), (128, 255)]
+
+    def _find_range(self, diff):
+        for lower, upper in self.PVD_RANGES:
+            if lower <= diff <= upper:
+                return lower, upper
+        return 0, 7
+
+    def function(self, image: Image, executable: bytes) -> Image:
+        payload = executable.hex() + chr(0)
+        payload_bits = ''.join(f"{ord(c):08b}" for c in payload)
+        data_index = 0
+
+        pixels = list(image.getdata())
+        new_pixels = []
+
+        for i in range(0, len(pixels) - 1, 2):
+            if data_index >= len(payload_bits):
+                new_pixels.extend(pixels[i:])  # append remaining pixels unchanged
+                break
+
+            p1 = list(pixels[i])
+            p2 = list(pixels[i + 1])
+
+            for channel in range(3):
+                if data_index >= len(payload_bits):
+                    break
+
+                diff = abs(p1[channel] - p2[channel])
+                lower, upper = self._find_range(diff)
+                width = upper - lower + 1
+                bits_to_embed = floor(log2(width))
+
+                if data_index + bits_to_embed > len(payload_bits):
+                    bits_to_embed = len(payload_bits) - data_index
+
+                bits = payload_bits[data_index : data_index + bits_to_embed]
+                value = int(bits, 2)
+                new_diff = lower + value
+
+                if p1[channel] > p2[channel]:
+                    p2[channel] = max(0, min(255, p1[channel] - new_diff))
+                else:
+                    p2[channel] = max(0, min(255, p1[channel] + new_diff))
+
+                data_index += bits_to_embed
+
+            new_pixels.append(tuple(p1))
+            new_pixels.append(tuple(p2))
+
+        image.putdata(new_pixels)
+        return image
+
+    def reverse_function(self, image: Image) -> bytes:
+        pixels = list(image.getdata())
+        bit_stream = ""
+
+        for i in range(0, len(pixels) - 1, 2):
+            p1 = pixels[i]
+            p2 = pixels[i + 1]
+
+            for channel in range(3):
+                diff = abs(p1[channel] - p2[channel])
+                lower, upper = self._find_range(diff)
+                width = upper - lower + 1
+                bits = floor(log2(width))
+                if bits > 0:
+                    value = max(0, min(diff - lower, (1 << bits) - 1))
+                    bit_stream += f"{value:0{bits}b}"
+
+        # Convert bitstream to bytes until null terminator
+        decoded_chars = []
+        for i in range(0, len(bit_stream), 8):
+            byte = bit_stream[i:i + 8]
+            if len(byte) < 8:
+                break
+            char = chr(int(byte, 2))
+            if char == '\x00':
+                break
+            decoded_chars.append(char)
+
+        hex_payload = ''.join(decoded_chars)
+
+        # Fix: hex string must be even-length for fromhex()
+        if len(hex_payload) % 2 != 0:
+            hex_payload = hex_payload[:-1]  # strip last char if odd-length
+
+        return bytes.fromhex(hex_payload)
+
+    def __set_limit_function(self, dims) -> None:
+        w, h = dims
+        pixel_pairs = (w * h) // 2
+        channels = 3  # R, G, B
+        max_bits = pixel_pairs * channels * 8
+        self.limit = max_bits // 8  # in bytes
