@@ -1,6 +1,6 @@
 # 🧬 What is LSB?
 **LSB (Least Significant Bit)** is a simple yet powerful steganographic technique used to hide secret information inside digital images.
-It works by modifying the least significant bit of each pixel's color channel. In fact, these tiny changes are so subtle that they are visually invisible to the human eye. 👁️
+It works by modifying the least significant bit of each pixel's color channel. In fact, these tiny changes are so subtle that they are visually invisible to the human eye.
 
 ---
 
