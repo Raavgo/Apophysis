@@ -1,0 +1,101 @@
+---
+const imageTypes = ['Landscape', 'Technology', 'City', 'Portrait', 'Abstract'];
+const malwareTypes = ['Ransomware', 'Trojan', 'Worm', 'Adware', 'Spyware'];
+const destinations = ['HuggingFace', 'Download', 'Stream'];
+const timeRanges = ['last 24 hours', 'last 2 days', 'last 4 days', 'last 7 days'];
+---
+
+<form method="POST" class="form">
+  <label>
+    📷 Select image type
+    <select name="imageType" required>
+      <option value="">Please select</option>
+      {imageTypes.map(type => <option value={type}>{type}</option>)}
+    </select>
+  </label>
+
+  <label>
+    🐛 Select malware type
+    <select name="malwareType" required>
+      <option value="">Please select</option>
+      {malwareTypes.map(type => <option value={type}>{type}</option>)}
+    </select>
+  </label>
+
+  <label>
+    🎯 Select destination
+    <select name="destination" required>
+      <option value="">Please select</option>
+      {destinations.map(dest => <option value={dest}>{dest}</option>)}
+    </select>
+  </label>
+
+  <label>
+    🕒 Select time range
+    <select name="timeRange" required>
+      <option value="">Please select</option>
+      {timeRanges.map(range => <option value={range}>{range}</option>)}
+    </select>
+  </label>
+
+  <button type="submit">Submit</button>
+
+  <style>
+  .form {
+     display: flex;
+     flex-direction: column;
+     gap: 1.5rem;
+     width: 100%;
+     max-width: 500px;
+     margin: 2rem auto 0 auto;
+     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+     background: #f9f9fb;
+     padding: 2rem;
+     border-radius: 12px;
+     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+     box-sizing: border-box;
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #222;
+  }
+
+  select {
+    margin-top: 0.5rem;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border: 1.8px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+    transition: border-color 0.3s ease;
+    cursor: pointer;
+  }
+
+  select:hover, select:focus {
+    border-color: #0077ff;
+    outline: none;
+  }
+
+  button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, #005eff 0%, #0077ff 100%);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 119, 255, 0.4);
+    transition: background 0.3s ease;
+  }
+
+  button:hover {
+    background: linear-gradient(135deg, #004ecc 0%, #005eff 100%);
+  }
+</style>
+
+</form>
