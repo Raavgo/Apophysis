@@ -30,13 +30,27 @@ const timeRanges = ['last 24 hours', 'last 2 days', 'last 4 days', 'last 7 days'
     </select>
   </label>
 
-  <label>
-    🕒 Select time range
-    <select name="timeRange" required>
-      <option value="">Please select</option>
-      {timeRanges.map(range => <option value={range}>{range}</option>)}
-    </select>
-  </label>
+  <label for="timeRange">
+  🕒 Select time range <span id="rangeValue">24h</span>
+    </label>
+    <input
+      type="range"
+      id="timeRange"
+      name="timeRange"
+      min="1"
+      max="336"
+      step="1"
+      value="24"
+    />
+
+    <script>
+      const slider = document.getElementById('timeRange');
+      const output = document.getElementById('rangeValue');
+      output.textContent = slider.value + 'h';
+      slider.oninput = function() {
+        output.textContent = this.value + 'h';
+      };
+    </script>
 
   <button type="submit">Submit</button>
 
